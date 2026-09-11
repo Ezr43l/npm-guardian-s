@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NPM Guardian</title>
+<link rel="icon" href="icono.svg" type="image/svg+xml" sizes="any">
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<main id="setup-view" class="envoltorio oculto">
+  <header class="page-heading"><span class="eyebrow">PRIMER INICIO</span><h1>Configurar NPM Guardian</h1><p>Estos datos se guardan en el volumen de Guardian. No tienes que trasladarlos a la plantilla de Unraid.</p></header>
+  <form id="setup-form" class="settings-form">
+    <section class="settings-card"><h2>Este nodo y el clÃºster</h2><div class="form-grid"><label><span>Nombre de este nodo</span><input id="setup-node" required maxlength="63" placeholder="node-a"></label><label><span>DirecciÃ³n de NPM en este nodo</span><input id="setup-address" required placeholder="npm-a.internal"></label></div><label class="switch-row compact"><input id="setup-standalone" type="checkbox"><span><strong>InstalaciÃ³n independiente</strong><small>ActÃ­valo sÃ³lo si no vas a sincronizar varios servidores.</small></span></label><label><span>Miembros del clÃºster</span><textarea id="setup-members" rows="5" required placeholder="node-a | npm-a.internal |&#10;node-b | npm-b.internal | http://guardian-b.internal:6061"></textarea><small>Una lÃ­nea por servidor: nombre | direcciÃ³n de NPM | URL de Guardian. La URL puede quedar vacÃ­a sÃ³lo en la lÃ­nea de este nodo.</small></label><label><span>CÃ³digo de incorporaciÃ³n</span><textarea id="setup-enrollment" rows="3" autocomplete="off" spellcheck="false" placeholder="VacÃ­o en el primer nodo; pega aquÃ­ el cÃ³digo al configurar los demÃ¡s"></textarea><small>El primer nodo generarÃ¡ un cÃ³digo compartido. GuÃ¡rdalo y Ãºsalo en los demÃ¡s nodos del mismo clÃºster.</small></label></section>
+    <section class="settings-card"><h2>Keepalived</h2><div class="form-grid"><label><span>URL de Keepalived</span><input id="setup-keepalived-url" value="http://host.docker.internal:6060" required></label><label><span>Servicio flotante</span><input id="setup-keepalived-service" value="npm" required></label><label><span>Token API de Keepalived</span><input id="setup-keepalived-token" type="password" autocomplete="new-password"><small>Se guarda como secreto en /datos; no aparecerÃ¡ en la plantilla.</small></label></div><label class="switch-row compact"><input id="setup-keepalived-http" type="checkbox" checked><span><strong>Permitir HTTP hacia Keepalived en la red local</strong><small>DesactÃ­valo cuando la API use HTTPS verificable.</small></span></label></section>
+    <section class="settings-card"><h2>Acceso al portal</h2><div class="form-grid"><label><span>URL pÃºblica estable (opcional)</span><input id="setup-public-url" placeholder="https://guardian.example.net"></label><label><span>Proxy HTTPS de confianza</span><input id="setup-proxies" placeholder="IP o CIDR exacto del proxy"></label></div><label class="switch-row compact"><input id="setup-portal-http" type="checkbox"><span><strong>Permitir acceso directo por HTTP en la LAN</strong><small>Si no lo activas, debes indicar el proxy HTTPS de confianza.</small></span></label></section>
+    <section class="settings-card"><h2>Nginx Proxy Manager</h2><div class="form-grid"><label><span>Nombre del contenedor NPM</span><input id="setup-npm-container" value="npm" required></label><label><span>Esquema de la API</span><select id="setup-npm-scheme"><option value="https">HTTPS</option><option value="http">HTTP</option></select></label><label><span>Puerto de administraciÃ³n</span><input id="setup-npm-port" type="number" min="1" max="65535" value="443" required></label><label><span>Puerto HTTPS servido</span><input id="setup-npm-https-port" type="number" min="1" max="65535" value="443" required></label></div><label class="switch-row compact"><input id="setup-npm-http" type="checkbox"><span><strong>Permitir la API de NPM por HTTP en la red local</strong><small>Debe marcarse expresamente si seleccionas HTTP.</small></span></label></section>
+    <section class="settings-card"><h2>Opciones avanzadas</h2><p class="pista">Normalmente puedes conservar estos valores. Modifícalos si tu proxy, tus certificados internos o tus puertos requieren otra configuración.</p><div class="form-grid"><label><span>Puerto público del portal</span><input id="setup-public-port" type="number" min="1" max="65535" value="6061" required></label><label><span>Duración de la sesión (minutos)</span><input id="setup-session-minutes" type="number" min="5" max="60" value="15" required></label><label><span>CA de Keepalived (PEM, opcional)</span><textarea id="setup-keepalived-ca" rows="5" spellcheck="false" placeholder="-----BEGIN CERTIFICATE-----"></textarea></label><label><span>CA de NPM (PEM, opcional)</span><textarea id="setup-npm-ca" rows="5" spellcheck="false" placeholder="-----BEGIN CERTIFICATE-----"></textarea></label></div></section>
+    <div id="setup-message" class="recado oculto"></div><button id="setup-save" type="submit">Guardar y arrancar Guardian</button>
+  </form>
+  <section id="setup-code-card" class="settings-card oculto"><h2>CÃ³digo de incorporaciÃ³n del clÃºster</h2><p>GuÃ¡rdalo ahora. TendrÃ¡s que pegarlo al configurar los demÃ¡s nodos y no volverÃ¡ a mostrarse.</p><textarea id="setup-code" rows="5" readonly spellcheck="false"></textarea><button id="setup-code-copy" type="button">Copiar cÃ³digo</button><a class="boton-secundario" href="/">Continuar al acceso</a></section>
+</main>
+<main id="login-view" class="login-page oculto">
+  <section class="login-intro">
+    <img src="icono.svg" alt=""><span class="eyebrow">ALTA DISPONIBILIDAD PARA NPM</span>
+    <h1>NPM Guardian</h1>
+    <p>Sincronización de Nginx Proxy Manager, vigilancia de certificados y control seguro desde el único nodo activo.</p>
+    <div class="login-feature"><span class="escudo">✓</span><span>Acceso protegido, segundo factor opcional y réplica autenticada</span></div>
+  </section>
+  <section class="login-panel">
+    <form id="login-form" class="login-form" autocomplete="on">
+      <div class="login-symbol">◆</div><span class="eyebrow">ACCESO PRIVADO</span><h2 id="login-heading">Entrar en NPM Guardian</h2>
+      <p id="login-help">Comprobando el estado de la cuenta&hellip;</p>
+      <label><span>Usuario de NPM</span><input id="login-user" required minlength="3" maxlength="64" autocomplete="username" autofocus></label>
+      <label id="login-password-wrap"><span>Contraseña de NPM</span><input id="login-password" type="password" required autocomplete="current-password"></label>
+      <label id="login-otp-wrap" class="oculto"><span>Código 2FA o de recuperación</span><input id="login-otp" inputmode="numeric" autocomplete="one-time-code"></label>
+      <label id="login-recovery-wrap" class="oculto"><span>Código de recuperación de Guardian</span><input id="login-recovery" autocomplete="one-time-code"></label>
+      <div id="login-error" class="recado mal oculto"></div><button id="login-button" type="submit">Entrar</button>
+      <button id="emergency-toggle" class="boton-enlace oculto" type="button">Usar acceso de emergencia</button>
+    </form>
+  </section>
+</main>
+
+<div id="app-view" class="envoltorio oculto">
+  <header class="cabecera">
+    <img class="marca-icono" src="icono.svg" alt=""><div><h1>NPM Guardian</h1><p class="sub" id="sub">cargando&hellip;</p></div>
+    <div class="hueco"></div><span class="version" id="version">v&hellip;</span>
+    <button type="button" class="boton-secundario" id="profile-shortcut">Mi perfil</button>
+    <button type="button" class="boton-secundario" id="logout">Salir</button><span class="latido" id="latido">&mdash;</span>
+  </header>
+  <nav class="tabs" aria-label="Secciones"><button type="button" class="activo" data-view="dashboard">Estado</button><button type="button" data-view="config">Configuración</button><button type="button" data-view="profile">Mi perfil</button></nav>
+  <div id="recado" class="recado mal oculto"></div>
+
+  <main id="view-dashboard" class="vista-panel">
+    <header class="page-heading state-heading"><span class="eyebrow">RESUMEN OPERATIVO</span><h2>Estado del clúster</h2><p>Comprueba de un vistazo si las renovaciones pueden ejecutarse y qué nodo coordina el servicio.</p></header>
+
+    <section class="state-overview" aria-label="Resumen operativo">
+      <article class="status-card" id="namecheap-card" data-tone="neutral">
+        <header class="status-card-heading"><div><span class="status-kicker">RENOVACIÓN DNS</span><h3>Namecheap</h3></div><span class="status-badge neutral" id="namecheap-status">Comprobando</span></header>
+        <div class="status-hero"><span>IP pública</span><strong id="namecheap-ip">&mdash;</strong></div>
+        <dl class="status-facts">
+          <div><dt>DNS challenge</dt><dd id="namecheap-readiness">Pendiente</dd></div>
+          <div><dt>Última comprobación</dt><dd id="namecheap-checked">&mdash;</dd></div>
+        </dl>
+        <p class="status-note" id="namecheap-detail">Consultando la integración&hellip;</p>
+        <div id="credenciales"></div>
+      </article>
+
+      <article class="status-card" id="ha-card" data-tone="neutral">
+        <header class="status-card-heading"><div><span class="status-kicker">ALTA DISPONIBILIDAD</span><h3>IP flotante</h3></div><span class="status-badge neutral" id="ha-status">Comprobando</span></header>
+        <div class="status-hero"><span>Nodo activo</span><strong id="active-node">&mdash;</strong></div>
+        <dl class="status-facts">
+          <div><dt>IP flotante</dt><dd id="floating-ip">&mdash;</dd></div>
+          <div><dt>Autoridad</dt><dd id="role-source">Keepalived</dd></div>
+        </dl>
+        <p class="status-note" id="role-detail">Localizando el nodo que sostiene el servicio&hellip;</p>
+      </article>
+    </section>
+
+    <section class="dashboard-section"><header class="section-heading"><div><h2>Salud del clúster</h2><p class="pista">Guardian, NPM y capacidad de réplica en cada servidor.</p></div><span class="section-stat" id="nodes-summary">cargando&hellip;</span></header><div class="rejilla" id="rejilla-nodos"></div></section>
+
+    <section class="dashboard-section"><header class="section-heading"><div><h2>Sincronización</h2><p class="pista" id="sync-schedule-summary">La copia siempre sale del nodo que posee la IP flotante hacia los pasivos.</p></div></header><div class="operation-card"><div class="mando" id="sincronia">cargando&hellip;</div><div id="diferencias"></div><div class="acciones" id="acciones-sincronia"></div></div></section>
+
+    <section class="dashboard-section"><header class="section-heading"><div><h2>Certificados</h2><p class="pista">Ordenados por caducidad; los días representan periodos completos restantes.</p></div><div class="section-metrics"><span class="section-stat" id="cert-total">&mdash;</span><span class="section-stat" id="cert-risk">&mdash;</span></div></header><div class="marco desliza"><table><thead><tr><th>Certificado</th><th>Caduca</th><th>Quedan</th><th>Método</th><th></th></tr></thead><tbody id="cuerpo-certs"><tr><td colspan="5" class="vacio">cargando&hellip;</td></tr></tbody></table></div></section>
+
+    <section class="dashboard-section"><header class="section-heading"><div><h2>Proxy hosts</h2><p class="pista">Destinos publicados por el NPM activo.</p></div><span class="section-stat" id="proxy-total">&mdash;</span></header><div class="marco desliza"><table><thead><tr><th>Dominio</th><th>Destino</th><th>Certificado</th></tr></thead><tbody id="cuerpo-dominios"><tr><td colspan="3" class="vacio">cargando&hellip;</td></tr></tbody></table></div></section>
+  </main>
+
+  <main id="view-config" class="vista-panel oculto">
+    <header class="page-heading"><span class="eyebrow">NODO Y AUTOMATIZACIÓN</span><h2>Configuración</h2><p>La configuración local se guarda en este nodo. La automatización se replica cifrada al resto del clúster.</p></header>
+    <form id="node-config-form" class="settings-form node-settings-form">
+      <section class="settings-card"><h3>Este nodo y el clúster</h3><p class="pista">Sustituye las antiguas variables NPMG_NODE_NAME, NPMG_NODE_ADDRESS, NPMG_NODES y NPMG_PEERS de la plantilla.</p><div class="form-grid"><label><span>Nombre de este nodo</span><input id="node-name" required maxlength="63"></label><label><span>Dirección de NPM en este nodo</span><input id="node-address" required></label></div><label class="switch-row compact"><input id="node-standalone" type="checkbox"><span><strong>Instalación independiente</strong><small>Actívalo sólo si este Guardian no forma parte de un clúster.</small></span></label><label><span>Miembros del clúster</span><textarea id="node-members" rows="5" required></textarea><small>Una línea por servidor: nombre | dirección de NPM | URL de Guardian. La URL sólo puede quedar vacía para este nodo.</small></label></section>
+      <section class="settings-card"><h3>Conexión con Keepalived</h3><p class="pista">Guardian consulta esta API para determinar qué nodo posee la IP flotante.</p><div class="form-grid"><label><span>URL de Keepalived</span><input id="node-keepalived-url" required></label><label><span>Servicio flotante</span><input id="node-keepalived-service" required></label><label><span>Nuevo token API (opcional)</span><input id="node-keepalived-token" type="password" autocomplete="new-password" placeholder="Dejar vacío para conservar"><small id="node-keepalived-token-status"></small></label><label><span>Nueva CA en formato PEM (opcional)</span><textarea id="node-keepalived-ca" rows="5" spellcheck="false" placeholder="Dejar vacío para conservar"></textarea><small id="node-keepalived-ca-status"></small></label></div><label class="switch-row compact"><input id="node-keepalived-token-clear" type="checkbox"><span><strong>Eliminar el token guardado</strong><small>Keepalived deberá aceptar consultas sin token.</small></span></label><label class="switch-row compact"><input id="node-keepalived-ca-clear" type="checkbox"><span><strong>Eliminar la CA guardada</strong><small>Se utilizará la cadena de confianza del sistema.</small></span></label><label class="switch-row compact"><input id="node-keepalived-http" type="checkbox"><span><strong>Permitir HTTP hacia Keepalived en la red local</strong><small>Desactívalo cuando la API use HTTPS verificable.</small></span></label></section>
+      <section class="settings-card"><h3>Acceso al portal</h3><div class="form-grid"><label><span>URL pública estable (opcional)</span><input id="node-public-url" placeholder="https://guardian.example.net"></label><label><span>Puerto público del portal</span><input id="node-public-port" type="number" min="1" max="65535" required></label><label><span>Duración de la sesión (minutos)</span><input id="node-session-minutes" type="number" min="5" max="60" required></label><label><span>Proxies HTTPS de confianza</span><input id="node-proxies" placeholder="IP o CIDR del proxy"></label></div><label class="switch-row compact"><input id="node-portal-http" type="checkbox"><span><strong>Permitir acceso directo por HTTP en la LAN</strong><small>Si no lo activas, debes indicar el proxy HTTPS de confianza.</small></span></label></section>
+      <section class="settings-card"><h3>Conexión local con Nginx Proxy Manager</h3><div class="form-grid"><label><span>Nombre del contenedor NPM</span><input id="node-npm-container" required></label><label><span>Esquema de la API</span><select id="node-npm-scheme"><option value="https">HTTPS</option><option value="http">HTTP</option></select></label><label><span>Puerto de administración</span><input id="node-npm-api-port" type="number" min="1" max="65535" required></label><label><span>Puerto HTTPS servido</span><input id="node-npm-https-port" type="number" min="1" max="65535" required></label><label><span>Nueva CA en formato PEM (opcional)</span><textarea id="node-npm-ca" rows="5" spellcheck="false" placeholder="Dejar vacío para conservar"></textarea><small id="node-npm-ca-status"></small></label></div><label class="switch-row compact"><input id="node-npm-ca-clear" type="checkbox"><span><strong>Eliminar la CA guardada</strong><small>Se utilizará la cadena de confianza del sistema.</small></span></label><label class="switch-row compact"><input id="node-npm-http" type="checkbox"><span><strong>Permitir la API de NPM por HTTP en la red local</strong><small>Debe marcarse expresamente si seleccionas HTTP.</small></span></label></section>
+      <div id="node-config-message" class="recado oculto"></div><button id="node-config-save" type="submit">Guardar configuración del nodo y reiniciar</button>
+    </form>
+    <form id="config-form" class="settings-form">
+      <section class="settings-card"><h3>Sincronización automática</h3><label class="switch-row"><input id="sync-enabled" type="checkbox"><span><strong>Activar sincronización programada</strong><small>La tarea sólo se ejecuta en el nodo activo.</small></span></label><div class="form-grid"><label><span>Frecuencia</span><select id="sync-preset"><option value="*/5 * * * *">Cada 5 minutos</option><option value="*/15 * * * *">Cada 15 minutos</option><option value="*/30 * * * *">Cada 30 minutos</option><option value="0 * * * *">Cada hora</option><option value="0 */6 * * *">Cada 6 horas</option><option value="0 3 * * *">Cada día a las 03:00</option><option value="custom">Expresión personalizada</option></select></label><label id="sync-custom-wrap" class="oculto"><span>Expresión cron</span><input id="sync-cron" placeholder="*/15 * * * *" spellcheck="false"><small>minuto hora día mes día-semana</small></label></div><div id="topology-summary" class="readonly-summary"></div></section>
+      <section class="settings-card"><h3>Namecheap</h3><label class="switch-row"><input id="namecheap-enabled" type="checkbox"><span><strong>Activar integración con Namecheap</strong><small>Sólo condiciona certificados DNS-01 de Namecheap. Desactivarla no afecta a la alta disponibilidad, la sincronización ni otros métodos ACME.</small></span></label><div id="namecheap-fields"><div class="form-grid"><label><span>Usuario API de Namecheap</span><input id="namecheap-user" autocomplete="off"></label><label><span>Clave API de Namecheap</span><input id="namecheap-key" type="password" autocomplete="new-password" placeholder="Dejar vacío para conservar"><small id="namecheap-key-status"></small></label></div><label class="switch-row compact"><input id="namecheap-key-clear" type="checkbox"><span><strong>Eliminar la clave guardada</strong><small>Namecheap quedará desactivado al guardar si no proporcionas otra clave.</small></span></label></div></section>
+      <section class="settings-card"><h3>Política de renovación</h3><p class="pista">Se aplica a los certificados renovables, independientemente de que Namecheap esté activado.</p><div class="form-grid"><label><span>Renovar cuando queden</span><input id="renew-days" type="number" min="31" max="60" required><small>35 días es el valor recomendado.</small></label><label><span>Avisar cuando queden</span><input id="warning-days" type="number" min="1" max="60" required></label><label><span>Intentos automáticos totales</span><select id="renew-attempts"><option>1</option><option>2</option><option>3</option><option value="4">4</option></select><small>El límite seguro es 4; el quinto queda reservado para una intervención manual.</small></label></div></section>
+      <section class="settings-card"><h3>API de Nginx Proxy Manager</h3><p class="pista">Se usa para solicitar renovaciones. Guardian nunca modifica la base de datos para renovar.</p><div class="form-grid"><label><span>Usuario o correo de NPM</span><input id="npm-user" autocomplete="off"></label><label><span>Contraseña de NPM</span><input id="npm-password" type="password" autocomplete="new-password" placeholder="Dejar vacío para conservar"><small id="npm-password-status"></small></label><label><span>Puerto de administración</span><input id="npm-port" type="number" min="1" max="65535" required></label><label><span>Puerto HTTPS servido</span><input id="npm-https-port" type="number" min="1" max="65535" required><small>Permite verificar el certificado real tras renovar.</small></label><label><span>Timeout de renovación</span><input id="npm-timeout" type="number" min="360" max="1800" step="30" required><small>Debe superar el tiempo de propagación DNS; 720 s recomendado.</small></label></div><label class="switch-row compact"><input id="npm-password-clear" type="checkbox"><span><strong>Eliminar la contraseña técnica guardada</strong><small>Las renovaciones automáticas se pausarán hasta configurar otra.</small></span></label></section>
+      <div id="config-message" class="recado oculto"></div><button id="config-save" type="submit">Guardar y replicar</button>
+    </form>
+  </main>
+
+  <main id="view-profile" class="vista-panel oculto">
+    <header class="page-heading"><span class="eyebrow">CUENTA Y SEGURIDAD</span><h2>Mi perfil</h2><p>Gestiona tu identidad, contraseña y segundo factor.</p></header>
+    <div class="profile-grid"><section class="settings-card"><h3>Identidad</h3><form id="profile-form"><label><span>Nombre visible</span><input id="profile-name" maxlength="120" required></label><button type="submit">Guardar nombre</button></form></section><section class="settings-card"><h3>Contraseña administrada por NPM</h3><p class="pista">Guardian valida cada acceso contra el NPM activo y nunca guarda tu contraseña. Cámbiala desde Nginx Proxy Manager; la nueva será válida aquí en el siguiente inicio de sesión.</p><div class="veredicto bien">Identidad primaria delegada en NPM</div></section></div>
+    <section class="settings-card two-factor-card"><h3>Autenticación en dos pasos</h3><div id="two-factor-content"></div></section>
+    <section id="recovery-card" class="settings-card oculto"><h3>Códigos de recuperación</h3><p>Guárdalos ahora. Cada uno sirve una sola vez y no volverán a mostrarse.</p><div id="recovery-codes" class="recovery-codes"></div><button type="button" id="copy-recovery">Copiar códigos</button></section><div id="profile-message" class="recado oculto"></div>
+  </main>
+  <footer><span id="pie"></span><span>actualización automática cada 30 s</span></footer>
+</div>
+
+<div id="app-dialog-layer" class="dialog-layer oculto" aria-hidden="true">
+  <section id="app-dialog" class="dialog-panel" role="dialog" aria-modal="true" aria-labelledby="app-dialog-title" aria-describedby="app-dialog-message" tabindex="-1">
+    <div id="app-dialog-symbol" class="dialog-symbol" aria-hidden="true">!</div>
+    <span id="app-dialog-eyebrow" class="eyebrow">CONFIRMAR OPERACIÓN</span>
+    <h2 id="app-dialog-title">Confirmar</h2>
+    <p id="app-dialog-message"></p>
+    <div class="dialog-actions">
+      <button id="app-dialog-cancel" type="button" class="boton-secundario">Cancelar</button>
+      <button id="app-dialog-confirm" type="button" class="dialog-confirm">Continuar</button>
+    </div>
+  </section>
+</div>
+<div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="false"></div>
+<script src="app.js"></script>
+</body>
+</html>

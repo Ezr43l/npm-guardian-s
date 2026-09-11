@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>NPM-Guardian</Name>
+  <Repository>ghcr.io/ezr43l/npm-guardian-s:1.0.4</Repository>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Registry>https://github.com/Ezr43l/npm-guardian-s/pkgs/container/npm-guardian-s</Registry>
+  <Support>https://github.com/Ezr43l/npm-guardian-s/issues</Support>
+  <Project>https://github.com/Ezr43l/npm-guardian-s</Project>
+  <TemplateURL>https://raw.githubusercontent.com/Ezr43l/npm-guardian-s/main/unraid/my-NPM-Guardian.xml</TemplateURL>
+  <Overview>NPM Guardian mantiene sincronizado Nginx Proxy Manager desde el nodo que posee su IP flotante hacia los pasivos. Toda la aplicación se ejecuta en este único contenedor. Tras arrancarlo, abre el panel para completar el asistente; la topología, integraciones y secretos se guardan en Datos de Guardian y no en esta plantilla.</Overview>
+  <Category>Network:Management Tools:</Category>
+  <WebUI>http://[IP]:[PORT:6061]/</WebUI>
+  <Icon>https://raw.githubusercontent.com/Ezr43l/npm-guardian-s/main/logo/icono.png</Icon>
+  <ExtraParams>--restart=unless-stopped --init --read-only --cap-drop=ALL --security-opt=no-new-privileges:true --pids-limit=256 --tmpfs=/tmp:rw,noexec,nosuid,nodev,size=64m --add-host=host.docker.internal:host-gateway</ExtraParams>
+  <Config Name="Puerto del panel" Target="6061" Default="6061" Mode="tcp" Description="Puerto local de NPM Guardian." Type="Port" Display="always" Required="true" Mask="false">6061</Config>
+  <Config Name="Datos de NPM" Target="/npm" Default="" Mode="rw" Description="Directorio data del NPM local. Guardian lee SQLite y sólo lo reemplaza al aplicar una réplica validada con NPM detenido." Type="Path" Display="always" Required="true" Mask="false"></Config>
+  <Config Name="Certificados de NPM" Target="/npm-letsencrypt" Default="" Mode="rw" Description="Directorio letsencrypt del NPM local; se replica junto a la base de datos." Type="Path" Display="always" Required="true" Mask="false"></Config>
+  <Config Name="Datos de Guardian" Target="/datos" Default="/mnt/user/appdata/npm-guardian" Mode="rw" Description="Configuración, secretos generados, estado y respaldos. Conserva este volumen para mantener la identidad del clúster." Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/npm-guardian</Config>
+  <Config Name="Socket de Docker" Target="/var/run/docker.sock" Default="/var/run/docker.sock" Mode="rw" Description="Necesario para administrar únicamente el contenedor NPM que indiques en el asistente." Type="Path" Display="always" Required="true" Mask="false">/var/run/docker.sock</Config>
+</Container>

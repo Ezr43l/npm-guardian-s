@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" role="img" aria-labelledby="title desc">
+  <title id="title">NPM Guardian</title><desc id="desc">Sincronización de Nginx Proxy Manager en alta disponibilidad</desc>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071015"/><stop offset="1" stop-color="#102735"/></linearGradient><pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0v32" fill="none" stroke="#38bdf8" stroke-opacity=".07"/></pattern></defs>
+  <rect width="1280" height="320" rx="28" fill="url(#bg)"/><rect width="1280" height="320" rx="28" fill="url(#grid)"/>
+  <g transform="translate(70 48)"><rect width="224" height="224" rx="52" fill="#091820" stroke="#38bdf8" stroke-width="4"/><path d="M112 31c29 21 58 29 87 31v57c0 51-29 86-87 107-58-21-87-56-87-107V62c29-2 58-10 87-31z" fill="none" stroke="#55df9a" stroke-width="9"/><circle cx="112" cy="82" r="14" fill="#38bdf8"/><circle cx="73" cy="153" r="14" fill="#55df9a"/><circle cx="151" cy="153" r="14" fill="#55df9a"/><path d="m106 95-25 45m37-45 25 45m-56 13h50" stroke="#eafaff" stroke-width="7" stroke-linecap="round"/></g>
+  <text x="350" y="132" font-family="ui-monospace,SFMono-Regular,Consolas,monospace" font-size="66" font-weight="800" letter-spacing="3" fill="#eafaff">NPM GUARDIAN</text>
+  <text x="354" y="185" font-family="ui-monospace,SFMono-Regular,Consolas,monospace" font-size="22" font-weight="700" letter-spacing="1.5" fill="#38bdf8">PROXY · CERTIFICADOS · RÉPLICA · ALTA DISPONIBILIDAD</text>
+  <text x="354" y="232" font-family="Inter,Segoe UI,sans-serif" font-size="23" fill="#93afbd">El nodo activo manda; los pasivos permanecen preparados.</text>
+  <path d="M354 259h720" stroke="#55df9a" stroke-width="4" stroke-linecap="round"/><circle cx="1097" cy="259" r="8" fill="#55df9a"/>
+</svg>

@@ -1,0 +1,30 @@
+services:
+  npm-guardian:
+    image: ${NPMG_IMAGE:-ghcr.io/ezr43l/npm-guardian-s:1.0.4}
+    build:
+      context: .
+      dockerfile: docker/guardian/Dockerfile
+      target: runtime
+      args:
+        APP_VERSION: "1.0.4"
+        LICENSE: ${LICENSE_SPDX:-Apache-2.0}
+    container_name: ${NPMG_CONTAINER_NAME:-npm-guardian}
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m
+    ports:
+      - "${NPMG_BIND_ADDRESS:-127.0.0.1}:${NPMG_PUBLIC_PORT:-6061}:6061"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - "${NPM_DATA_DIR:?Define NPM_DATA_DIR in .env}:/npm"
+      - "${NPM_LETSENCRYPT_DIR:?Define NPM_LETSENCRYPT_DIR in .env}:/npm-letsencrypt"
+      - "${NPMG_DATA_DIR:-./data/guardian}:/datos"
+      - "${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock"

@@ -1,0 +1,11 @@
+# Los guiones de este repo se ejecutan en los Unraid (Linux) y algunos van
+# DENTRO de la imagen. Clonado en Windows con finales CRLF, un shebang roto deja
+# el guion inservible y el fallo es ilegible. Se fuerza LF siempre, se clone
+# donde se clone. Misma razon que en docker-registry y floating-ip.
+* text=auto eol=lf
+
+# Las imagenes son binarias y no deben pasar por ninguna conversion de finales
+# de linea. `text=auto` ya lo detecta, pero se declara explicito: un PNG
+# corrompido en el repo no se nota hasta que Unraid no pinta el icono.
+*.png binary
+*.svg text eol=lf

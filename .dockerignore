@@ -1,0 +1,15 @@
+.git
+.github
+.env
+.env.*
+!.env.example
+data
+secrets
+**/__pycache__
+**/*.py[cod]
+**/.pytest_cache
+*.log
+*.tar
+*.tar.gz
+*.zip
+docs/VALIDATION-*.md

@@ -1,0 +1,30 @@
+# Los secretos NUNCA viven aqui. Las credenciales de Namecheap se declaran como
+# variables de la plantilla de Unraid, y las claves SSH se leen por ruta desde
+# SECRETS_DIR. Esta lista es un cinturon de seguridad por si alguien copia algo
+# dentro del repo por error.
+.secrets/
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*_ssh_key
+*_ssh_key.pub
+*token*.txt
+*.log
+__pycache__/
+*.py[cod]
+.env
+data/
+guardian.json
+guardian.json.bak
+operacion.json
+vigilancia.json
+vigilancia.json.bak
+cluster-nonces.json
+cluster-nonces.json.bak
+database.sqlite
+database.sqlite-*
+credentials*.ini
+*.backup
+*.bak

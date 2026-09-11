@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">NPM Guardian</title>
+  <desc id="desc">Escudo que sincroniza tres nodos de proxy</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071015"/><stop offset="1" stop-color="#102735"/></linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#38bdf8"/><stop offset="1" stop-color="#55df9a"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <path d="M256 72c54 40 109 56 164 60v111c0 98-55 165-164 205C147 408 92 341 92 243V132c55-4 110-20 164-60z" fill="#0a1921" stroke="url(#accent)" stroke-width="18" stroke-linejoin="round"/>
+  <circle cx="256" cy="180" r="30" fill="#38bdf8"/>
+  <circle cx="178" cy="310" r="30" fill="#55df9a"/>
+  <circle cx="334" cy="310" r="30" fill="#55df9a"/>
+  <path d="M244 209 194 281m74-72 50 72M208 310h96" fill="none" stroke="#eafaff" stroke-width="14" stroke-linecap="round"/>
+  <path d="m286 237 31 2-8-30m-83 28-31 2 8-30" fill="none" stroke="#ffcf5a" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
