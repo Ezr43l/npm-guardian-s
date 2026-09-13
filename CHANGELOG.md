@@ -3,6 +3,14 @@
 La fuente única de versión es [`VERSION`](VERSION). Código, API, interfaz,
 metadatos OCI e imagen comparten ese valor; no existe un contador de imagen.
 
+## [1.0.5] — soporte de la comunidad
+
+### Added
+
+- Añadido en el acceso y en el pie del panel el enlace de soporte a la comunidad de
+  Discord de Unraides.
+- La plantilla pública sigue el canal `stable`.
+
 ## [1.0.4] — recuperación automática tras un cambio de activo
 
 ### Fixed

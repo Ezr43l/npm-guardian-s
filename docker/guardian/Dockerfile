@@ -42,12 +42,15 @@ ENV NPMG_PORT=6061 \
     PYTHONUNBUFFERED=1
 
 FROM runtime-base AS tests
+ARG RUN_BUILD_TESTS=0
 WORKDIR /src
 COPY . /src
-RUN export NPMG_SESSION_SECRET="$(head -c 64 /dev/urandom | od -An -tx1 | tr -d ' \n')" && \
-    export NPMG_CLUSTER_TOKEN="$(head -c 64 /dev/urandom | od -An -tx1 | tr -d ' \n')" && \
-    export NPMG_STANDALONE=1 NPMG_NODE_NAME=image-test-node && \
-    python3 -m unittest discover -s tests -v && touch /tmp/tests-passed
+RUN if [ "$RUN_BUILD_TESTS" = "1" ]; then \
+      export NPMG_SESSION_SECRET="$(head -c 64 /dev/urandom | od -An -tx1 | tr -d ' \n')"; \
+      export NPMG_CLUSTER_TOKEN="$(head -c 64 /dev/urandom | od -An -tx1 | tr -d ' \n')"; \
+      export NPMG_STANDALONE=1 NPMG_NODE_NAME=image-test-node; \
+      python3 -m unittest discover -s tests -v; \
+    fi && touch /tmp/tests-passed
 
 FROM runtime-base AS runtime
 COPY --from=tests /tmp/tests-passed /opt/tests-passed

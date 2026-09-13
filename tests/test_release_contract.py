@@ -66,7 +66,7 @@ class IsolatedData(unittest.TestCase):
 
 class TestStableVersionContract(unittest.TestCase):
     def test_single_stable_version_source(self):
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "1.0.4")
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "1.0.5")
         self.assertFalse((ROOT / "docker" / "guardian" / "VERSION").exists())
         dockerfile = (ROOT / "docker" / "guardian" / "Dockerfile").read_text(
             encoding="utf-8")

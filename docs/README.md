@@ -1,23 +1,23 @@
-# NPM Guardian 1.0.4 — índice documental
+# NPM Guardian 1.0.5 — índice documental
 
 Las puertas reproducibles de publicación están en
 [`RELEASE-CHECKLIST.md`](RELEASE-CHECKLIST.md). Los informes físicos de la
 infraestructura privada no forman parte del árbol compartible.
 
-Esta carpeta describe el contrato portable de **NPM Guardian 1.0.4**.
+Esta carpeta describe el contrato portable de **NPM Guardian 1.0.5**.
 No contiene nombres, direcciones, rutas, dominios ni credenciales de una
 instalación concreta.
 
 | Superficie | Identidad de versión |
 | --- | --- |
-| Fuente normativa | `VERSION` = `1.0.4` |
-| Imagen OCI pública futura | `ghcr.io/ezr43l/npm-guardian-s:1.0.4` |
-| API y metadatos OCI | `1.0.4` |
-| Interfaz | `v1.0.4` |
-| Tag Git estable | `v1.0.4` |
+| Fuente normativa | `VERSION` = `1.0.5` |
+| Imagen OCI pública futura | `ghcr.io/ezr43l/npm-guardian-s:1.0.5` |
+| API y metadatos OCI | `1.0.5` |
+| Interfaz | `v1.0.5` |
+| Tag Git estable | `v1.0.5` |
 
 No existe una segunda versión para la imagen. El canal compartido usa el tag
-exacto `v1.0.4`; su creación depende siempre del checklist, no de una fecha o
+exacto `v1.0.5`; su creación depende siempre del checklist, no de una fecha o
 promesa incluida en este índice.
 
 ## Qué documento leer
@@ -70,4 +70,4 @@ sincronización siguen disponibles sin él.
 
 Los documentos describen el contrato que debe superar la exportación pública. No son un
 acta de publicación. Commit, digest, resultados de pruebas, despliegue por nodo
-y tag `v1.0.4` se registrarán sólo después de observarlos y verificarlos.
+y tag `v1.0.5` se registrarán sólo después de observarlos y verificarlos.

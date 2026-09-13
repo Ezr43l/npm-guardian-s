@@ -556,6 +556,8 @@ footer a:hover { color: var(--acento); }
 .login-form > p { margin: -8px 0 3px; color: var(--tinta-tenue); font-size: 13px; }
 .login-form button { min-height: 44px; }
 .login-form .boton-enlace { min-height: auto; padding: 5px; border: 0; color: var(--acento); background: transparent; }
+.login-support { color: var(--acento); font: 11px var(--mono); text-align: center; }
+.login-support:hover { color: var(--tinta); }
 
 .settings-form { display: flex; flex-direction: column; gap: 18px; }
 .node-settings-form { padding-bottom: 34px; border-bottom: 1px solid var(--linea); }

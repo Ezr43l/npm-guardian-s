@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>NPM-Guardian</Name>
-  <Repository>ghcr.io/ezr43l/npm-guardian-s:1.0.4</Repository>
+  <Repository>ghcr.io/ezr43l/npm-guardian-s:stable</Repository>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>sh</Shell>

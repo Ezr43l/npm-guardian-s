@@ -1,9 +1,9 @@
 # API e integraciones
 
-## Contrato 1.0.4
+## Contrato 1.0.5
 
 Las rutas viven bajo `/api/` sin prefijo de versión. Su compatibilidad forma
-parte del contrato semántico de 1.0.4.
+parte del contrato semántico de 1.0.5.
 
 Las respuestas JSON usan UTF-8, `Cache-Control: no-store` y errores estables:
 

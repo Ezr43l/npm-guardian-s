@@ -1,12 +1,12 @@
 # Compatibilidad con Nginx Proxy Manager
 
-## Matriz de NPM Guardian 1.0.4
+## Matriz de NPM Guardian 1.0.5
 
 | NPM | Estado | Evidencia |
 | --- | --- | --- |
 | `2.15.1` | soportado y verificado | imagen oficial `jc21/nginx-proxy-manager:2.15.1@sha256:52b2c59994f3d36acfcf70a1626f29734df0ed8c71bacc0269f78b6f939858bb`; laboratorio ARM64 y AMD64 |
 | otro `2.15.x` | candidato, no asumido automáticamente | debe superar suite, inventario y réplica física con el socket Docker local antes de añadirse |
-| `2.14.x` y anteriores | no soportado para una instalación nueva | fuera de la rama con soporte de seguridad declarada por NPM al validar 1.0.4 |
+| `2.14.x` y anteriores | no soportado para una instalación nueva | fuera de la rama con soporte de seguridad declarada por NPM al validar 1.0.5 |
 | futura rama mayor | incompatible hasta revisión explícita | un cambio de esquema desconocido bloquea el inventario y la réplica de forma segura |
 
 La política upstream y las versiones publicadas se comprueban en la

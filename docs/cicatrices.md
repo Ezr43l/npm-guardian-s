@@ -288,7 +288,7 @@ ocultarlo ni confundirlo con corrupción.
 - No hay pérdida cero entre snapshots asíncronos.
 - El servidor integrado no termina TLS.
 - El socket Docker exige confianza en el host y en el contenedor Guardian que lo monta.
-- No hay token externo de automatización para mutaciones en 1.0.4.
+- No hay token externo de automatización para mutaciones en 1.0.5.
 
 Cuando una limitación desaparezca, deben actualizarse código, pruebas, modelo de
 amenazas y este documento en el mismo cambio.
