@@ -3,6 +3,17 @@
 La fuente única de versión es [`VERSION`](VERSION). Código, API, interfaz,
 metadatos OCI e imagen comparten ese valor; no existe un contador de imagen.
 
+## [1.0.6] — actualización inmediata tras un cambio de nodo activo
+
+### Fixed
+
+- NPM Guardian consulta cada diez segundos qué nodo sostiene la dirección
+  flotante, sin aumentar la frecuencia horaria de las llamadas a Namecheap.
+- Cuando cambia el nodo activo, la tarjeta deja de conservar el nombre anterior
+  y el nuevo activo comprueba inmediatamente la IP pública y el acceso DNS.
+- El registro del contenedor anota los cambios de nodo sin repetir mensajes en
+  cada consulta.
+
 ## [1.0.5] — soporte de la comunidad
 
 ### Added

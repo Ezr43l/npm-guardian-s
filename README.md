@@ -4,7 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/Ezr43l/npm-guardian-s/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Ezr43l/npm-guardian-s/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Versión 1.0.5" src="https://img.shields.io/badge/versión-1.0.5-38bdf8">
+  <img alt="Versión 1.0.6" src="https://img.shields.io/badge/versión-1.0.6-38bdf8">
   <img alt="Un contenedor" src="https://img.shields.io/badge/despliegue-1%20contenedor-55df9a">
   <img alt="NPM 2.15.1" src="https://img.shields.io/badge/NPM%20verificado-2.15.1-ffcf5a">
   <a href="LICENSE"><img alt="Licencia Apache 2.0" src="https://img.shields.io/badge/licencia-Apache--2.0-7d91a3"></a>
@@ -14,7 +14,7 @@
 
 NPM Guardian replica de forma controlada el estado de Nginx Proxy Manager desde
 el nodo que posee la IP flotante hacia los nodos pasivos. La versión actual es
-**1.0.5**, la única publicada en este repositorio, y toda la aplicación se
+**1.0.6**, la única publicada en este repositorio, y toda la aplicación se
 ejecuta en **un único contenedor**.
 
 **[Primer arranque](docs/instalacion-primer-arranque.md)** ·
@@ -22,7 +22,6 @@ ejecuta en **un único contenedor**.
 **[API](docs/api-integraciones.md)** ·
 **[Operación](docs/runbook.md)** ·
 **[Seguridad de réplica](docs/replicacion-seguridad.md)**
-
 ## Instalación rápida en Unraid
 
 La plantilla pública sólo pide cinco conexiones propias de Docker:
@@ -87,7 +86,7 @@ ese momento el fichero persistente es la fuente autoritativa. Una instalación
 nueva usa el asistente y no necesita variables funcionales ni montajes de secretos.
 
 La imagen pública prevista es
-`ghcr.io/ezr43l/npm-guardian-s:1.0.5`. Hasta que exista una release pública,
+`ghcr.io/ezr43l/npm-guardian-s:1.0.6`. Hasta que exista una release pública,
 puede construirse localmente con `build-image.sh` o mediante Compose.
 
 ## Desarrollo

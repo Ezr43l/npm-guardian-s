@@ -31,6 +31,10 @@ RUTA_ESTADO = os.path.join(os.environ.get("NPMG_DATA_DIR", os.environ.get(
     "NPMHA_DATOS", "/datos")), "vigilancia.json")
 RUTA_ESTADO_BACKUP = RUTA_ESTADO + ".bak"
 INTERVALO = int(os.environ.get("NPMG_WATCH_INTERVAL", os.environ.get("NPMHA_INTERVALO", "3600")))
+# El nodo que sostiene la IP flotante puede cambiar en cualquier momento. Su
+# rol se consulta con frecuencia, aunque la comprobacion externa de Namecheap
+# conserve el intervalo largo para no generar peticiones innecesarias.
+INTERVALO_ROL = max(1, min(INTERVALO, 10))
 
 # Un certificado por debajo de esto ya deberia haberse renovado solo: si sigue
 # ahi, algo no funciona y hay que mirarlo.
@@ -1022,37 +1026,69 @@ def ultimo():
     return dict(_ultimo)
 
 
+def _procesar_rol(mando, firma_anterior, proxima_revision, ahora=None):
+    """Actualiza el rol enseguida y limita la comprobacion DNS al intervalo."""
+    ahora = time.monotonic() if ahora is None else ahora
+    firma = (mando.get("activo"), mando.get("soy_yo"), mando.get("origen"))
+    cambio = firma != firma_anterior
+
+    if mando.get("soy_yo") is True:
+        if cambio or ahora >= proxima_revision:
+            # Se programa primero la siguiente pasada: si Namecheap falla no se
+            # le golpea cada diez segundos hasta que vuelva a responder.
+            proxima_revision = ahora + INTERVALO
+            revisar(mando=mando)
+        else:
+            _ultimo["mando"] = mando
+    elif mando.get("soy_yo") is False:
+        if cambio:
+            _ultimo.update({
+                "mando": mando,
+                "cuando": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "namecheap": {
+                    "estado": "no_me_toca",
+                    "mensaje": f"manda «{mando.get('activo')}»; aqui no se comprueba ni se avisa",
+                },
+            })
+    elif cambio:
+        _ultimo.update({
+            "mando": mando,
+            "cuando": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "namecheap": {
+                "estado": "sin_saber_quien_manda",
+                "mensaje": "no se sabe qué servidor sostiene la dirección "
+                           f"({mando.get('origen') or 'sin motivo'}). Nadie está "
+                           "vigilando los certificados hasta que se aclare.",
+            },
+        })
+        print("vigilante: no se sabe quien manda; no se revisa ni se avisa "
+              f"({mando.get('origen')})", flush=True)
+
+    if cambio:
+        activo = mando.get("activo") or "desconocido"
+        rol = "activo" if mando.get("soy_yo") is True else (
+            "pasivo" if mando.get("soy_yo") is False else "sin determinar")
+        print(f"vigilante: ahora manda «{activo}»; este nodo queda {rol}", flush=True)
+    return firma, proxima_revision
+
+
 def arrancar_bucle(quien_manda):
-    """Revisa cada INTERVALO. Solo avisa el nodo que manda: si avisaran los tres,
-    recibirias tres mensajes identicos y acabarias silenciando el canal."""
+    """Sigue el rol en segundos y revisa Namecheap cada ``INTERVALO``.
+
+    Solo avisa el nodo que manda: si avisaran los tres, recibirias tres mensajes
+    identicos y acabarias silenciando el canal.
+    """
     def bucle():
-        time.sleep(10)  # dar tiempo a que el panel de direcciones responda
+        time.sleep(INTERVALO_ROL)  # dar tiempo a que el panel responda
+        firma_anterior = object()
+        proxima_revision = 0.0
         while True:
             try:
-                m = quien_manda()
-                if m.get("soy_yo") is True:
-                    revisar(mando=m)
-                elif m.get("soy_yo") is False:
-                    _ultimo.update({"mando": m, "cuando": time.strftime("%Y-%m-%d %H:%M:%S"),
-                                    "namecheap": {"estado": "no_me_toca",
-                                                  "mensaje": f"manda «{m.get('activo')}»; aqui no se comprueba ni se avisa"}})
-                else:
-                    # No se sabe quien manda. Antes se revisaba igual, y con el
-                    # panel de direcciones caido los TRES nodos avisaban a la vez.
-                    #
-                    # No revisar deja un hueco de vigilancia, asi que ese hueco se
-                    # DICE en pantalla en vez de quedarse callado: un silencio que
-                    # parece normalidad es peor que un aviso incomodo.
-                    _ultimo.update({"mando": m, "cuando": time.strftime("%Y-%m-%d %H:%M:%S"),
-                                    "namecheap": {"estado": "sin_saber_quien_manda",
-                                                  "mensaje": "no se sabe qué servidor sostiene la dirección "
-                                                             f"({m.get('origen') or 'sin motivo'}). Nadie está "
-                                                             "vigilando los certificados hasta que se aclare."}})
-                    print("vigilante: no se sabe quien manda; no se revisa ni se avisa "
-                          f"({m.get('origen')})", flush=True)
+                firma_anterior, proxima_revision = _procesar_rol(
+                    quien_manda(), firma_anterior, proxima_revision)
             except Exception as e:  # noqa: BLE001
                 print(f"vigilante: fallo en la revision: {type(e).__name__}: {e}", flush=True)
-            time.sleep(INTERVALO)
+            time.sleep(INTERVALO_ROL)
 
     h = threading.Thread(target=bucle, daemon=True)
     h.start()

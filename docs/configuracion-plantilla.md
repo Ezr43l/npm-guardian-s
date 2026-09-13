@@ -2,7 +2,7 @@
 
 ## Qué pertenece a la plantilla
 
-La plantilla Unraid 1.0.5 contiene exactamente cinco campos. Todos son parte del
+La plantilla Unraid 1.0.6 contiene exactamente cinco campos. Todos son parte del
 contrato del contenedor, no de la lógica de NPM Guardian:
 
 | Campo | Destino | Motivo |
@@ -68,4 +68,4 @@ plantilla pública.
 
 Una plantilla no construye una imagen: Unraid descarga la referencia de
 `<Repository>`. La publicación compartida deberá proporcionar
-`ghcr.io/ezr43l/npm-guardian-s:1.0.5` para las arquitecturas Linux declaradas.
+`ghcr.io/ezr43l/npm-guardian-s:1.0.6` para las arquitecturas Linux declaradas.

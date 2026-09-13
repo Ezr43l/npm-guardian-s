@@ -307,7 +307,7 @@ HTTP-01 ni a la réplica básica.
 1. confirma el portador y mueve la VIP mediante el sistema autorizado si hace
    falta;
 2. actualiza pasivos uno a uno;
-3. verifica `1.0.5`, vista reducida, secretos, huella topológica, NPM y receptor;
+3. verifica `1.0.6`, vista reducida, secretos, huella topológica, NPM y receptor;
 4. actualiza el activo al final;
 5. verifica login HTTPS, quórum, sincronización y TLS;
 6. verifica que `icono.png` es PNG 128 × 128 y que su SHA-256 coincide en
@@ -317,10 +317,10 @@ HTTP-01 ni a la réplica básica.
    heredados de la antigua topología de dos contenedores.
 
 Para el despliegue genérico puede declararse `NPMG_ACTIVE_NODE`; el guion ordena
-los pasivos antes del activo. Una referencia `:1.0.5` debe llevar metadatos OCI
-`1.0.5` y responder lo mismo en `/api/version`.
+los pasivos antes del activo. Una referencia `:1.0.6` debe llevar metadatos OCI
+`1.0.6` y responder lo mismo en `/api/version`.
 
-La versión no se publica en el repositorio compartido ni recibe el tag `v1.0.5` hasta
+La versión no se publica en el repositorio compartido ni recibe el tag `v1.0.6` hasta
 completar estas comprobaciones.
 
 La evidencia automática actual son 136 pruebas superadas dentro de las imágenes

@@ -7,9 +7,9 @@ datos reales de NPM.
 ```sh
 scp -i <clave> docker/guardian/pruebas/*.py root@<nodo>:/tmp/
 ssh -i <clave> root@<nodo> "
-  docker run --rm --entrypoint python3 -v /tmp/replica.py:/p.py:ro ghcr.io/ezr43l/npm-guardian-s:1.0.5 /p.py
-  docker run --rm --entrypoint python3 -v /tmp/comparar.py:/p.py:ro ghcr.io/ezr43l/npm-guardian-s:1.0.5 /p.py
-  docker run --rm --entrypoint python3 -v /tmp/vigilancia.py:/p.py:ro ghcr.io/ezr43l/npm-guardian-s:1.0.5 /p.py
+  docker run --rm --entrypoint python3 -v /tmp/replica.py:/p.py:ro ghcr.io/ezr43l/npm-guardian-s:1.0.6 /p.py
+  docker run --rm --entrypoint python3 -v /tmp/comparar.py:/p.py:ro ghcr.io/ezr43l/npm-guardian-s:1.0.6 /p.py
+  docker run --rm --entrypoint python3 -v /tmp/vigilancia.py:/p.py:ro ghcr.io/ezr43l/npm-guardian-s:1.0.6 /p.py
 "
 ```
 

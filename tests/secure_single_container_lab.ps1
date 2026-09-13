@@ -1,5 +1,5 @@
 param(
-    [string]$GuardianImage = "npm-guardian:1.0.5",
+    [string]$GuardianImage = "npm-guardian:1.0.6",
     [string]$NpmImage = "jc21/nginx-proxy-manager:2.15.1@sha256:52b2c59994f3d36acfcf70a1626f29734df0ed8c71bacc0269f78b6f939858bb"
 )
 

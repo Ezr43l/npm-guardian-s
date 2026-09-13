@@ -1,4 +1,4 @@
-# Checklist de publicacion de NPM Guardian 1.0.5
+# Checklist de publicacion de NPM Guardian 1.0.6
 
 Este repositorio contiene únicamente el árbol público aprobado de NPM Guardian.
 El historial y la infraestructura del entorno de desarrollo no forman parte de
@@ -15,7 +15,7 @@ la distribución compartida.
 - [ ] Configurar la variable del repositorio público `LICENSE_SPDX=Apache-2.0`.
 - [x] Aprobar expresamente la creacion de `Ezr43l/npm-guardian-s`.
 - [ ] Exportar un arbol limpio sin remotos, ramas ni historial privados.
-- [ ] Publicar `ghcr.io/ezr43l/npm-guardian-s:1.0.5` para AMD64/ARM64
+- [ ] Publicar `ghcr.io/ezr43l/npm-guardian-s:1.0.6` para AMD64/ARM64
   con SBOM, procedencia y digest.
 - [ ] Verificar pull anonimo y todos los enlaces de la plantilla publica.
 - [ ] Ejecutar Trivy y Gitleaks de nuevo sobre el artefacto exportado.
@@ -37,7 +37,7 @@ la distribución compartida.
 
 ## Contrato inmutable de esta release
 
-1. La version permanece exactamente `1.0.5` en `VERSION`, imagen, Compose,
+1. La version permanece exactamente `1.0.6` en `VERSION`, imagen, Compose,
    panel y plantilla.
 2. No se crea ni publica ningun artefacto desde el repositorio privado.
 3. La plantilla publica no contiene valores de una instalacion y apunta a
@@ -47,7 +47,7 @@ la distribución compartida.
 5. El workflow rechaza licencia ausente, tag divergente, repositorio incorrecto,
    dependencias auditadas o codigo inseguro y cualquier vulnerabilidad
    critica/alta detectada, sin `ignore-unfixed`.
-6. El tag `v1.0.5` es anotado y protegido, exige CI correcta sobre el mismo
+6. El tag `v1.0.6` es anotado y protegido, exige CI correcta sobre el mismo
    commit y produce SBOM por arquitectura, digest y procedencia firmada.
 7. La plantilla contiene exactamente cinco campos Docker; la instalación nueva
    se termina desde el asistente web y no requiere secretos externos.

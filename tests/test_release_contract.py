@@ -64,9 +64,52 @@ class IsolatedData(unittest.TestCase):
         shutil.rmtree(self.temp, ignore_errors=True)
 
 
+class TestWatchdogRoleRefresh(unittest.TestCase):
+    def setUp(self):
+        self.previous = copy.deepcopy(vigilante._ultimo)
+
+    def tearDown(self):
+        vigilante._ultimo.clear()
+        vigilante._ultimo.update(self.previous)
+
+    def test_becoming_active_checks_namecheap_immediately(self):
+        command = {"activo": "osiris", "soy_yo": True,
+                   "origen": "dirección flotante"}
+        with mock.patch.object(vigilante, "revisar") as review:
+            signature, next_review = vigilante._procesar_rol(
+                command, ("khonshu", False, "dirección flotante"),
+                proxima_revision=500.0, ahora=100.0)
+        review.assert_called_once_with(mando=command)
+        self.assertEqual(signature, ("osiris", True, "dirección flotante"))
+        self.assertEqual(next_review, 100.0 + vigilante.INTERVALO)
+
+    def test_same_active_node_respects_hourly_interval(self):
+        command = {"activo": "osiris", "soy_yo": True,
+                   "origen": "dirección flotante"}
+        with mock.patch.object(vigilante, "revisar") as review:
+            _, next_review = vigilante._procesar_rol(
+                command, ("osiris", True, "dirección flotante"),
+                proxima_revision=500.0, ahora=100.0)
+        review.assert_not_called()
+        self.assertEqual(next_review, 500.0)
+        self.assertEqual(vigilante._ultimo["mando"], command)
+
+    def test_passive_card_changes_to_current_active_node(self):
+        command = {"activo": "osiris", "soy_yo": False,
+                   "origen": "dirección flotante"}
+        with mock.patch.object(vigilante, "revisar") as review:
+            vigilante._procesar_rol(
+                command, ("khonshu", False, "dirección flotante"),
+                proxima_revision=500.0, ahora=100.0)
+        review.assert_not_called()
+        self.assertEqual(vigilante._ultimo["mando"], command)
+        self.assertEqual(vigilante._ultimo["namecheap"]["estado"], "no_me_toca")
+        self.assertIn("osiris", vigilante._ultimo["namecheap"]["mensaje"])
+
+
 class TestStableVersionContract(unittest.TestCase):
     def test_single_stable_version_source(self):
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "1.0.5")
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "1.0.6")
         self.assertFalse((ROOT / "docker" / "guardian" / "VERSION").exists())
         dockerfile = (ROOT / "docker" / "guardian" / "Dockerfile").read_text(
             encoding="utf-8")

@@ -1,18 +1,18 @@
 # Desarrollo y versionado
 
-## Identidad de la versión 1.0.5
+## Identidad de la versión 1.0.6
 
 NPM Guardian tiene una sola versión de producto. Para la primera versión estable:
 
 | Superficie | Valor |
 | --- | --- |
-| Archivo `VERSION` | `1.0.5` |
-| Etiqueta pública futura | `ghcr.io/ezr43l/npm-guardian-s:1.0.5` |
-| API y metadatos OCI | `1.0.5` |
-| Interfaz | `v1.0.5` |
-| Etiqueta Git prevista | `v1.0.5` |
+| Archivo `VERSION` | `1.0.6` |
+| Etiqueta pública futura | `ghcr.io/ezr43l/npm-guardian-s:1.0.6` |
+| API y metadatos OCI | `1.0.6` |
+| Interfaz | `v1.0.6` |
+| Etiqueta Git prevista | `v1.0.6` |
 
-No existe un contador independiente de imagen. La presencia de `1.0.5` en
+No existe un contador independiente de imagen. La presencia de `1.0.6` en
 `VERSION` identifica la aplicación que se está verificando; no demuestra por sí
 sola que el tag Git o la release estable ya existan. Una compilación publicada
 nunca debe reutilizar una etiqueta para contenido diferente.
@@ -145,8 +145,8 @@ El orden operativo es deliberado:
 11. Crear la etiqueta Git `v<VERSION>` y la publicación asociada sólo cuando el despliegue haya terminado correctamente.
 12. Actualizar la documentación operativa compartida con resultados verificados.
 
-Para la versión `1.0.5`, la imagen es `ghcr.io/ezr43l/npm-guardian-s:1.0.5` y la etiqueta Git
-prevista es `v1.0.5`. La etiqueta estable no se crea por adelantado y no se
+Para la versión `1.0.6`, la imagen es `ghcr.io/ezr43l/npm-guardian-s:1.0.6` y la etiqueta Git
+prevista es `v1.0.6`. La etiqueta estable no se crea por adelantado y no se
 mueve después.
 
 ## Evidencias mínimas de publicación
@@ -163,7 +163,7 @@ El acta de una publicación debe enlazar o registrar, sin secretos:
 - Prueba de una sincronización completa o justificación de por qué no procede.
 - Incidencias abiertas, mitigaciones y decisión de aceptación.
 
-Este repositorio documenta el contrato, pero no contiene un acta de `v1.0.5` hasta disponer de esas evidencias reales.
+Este repositorio documenta el contrato, pero no contiene un acta de `v1.0.6` hasta disponer de esas evidencias reales.
 
 ## Despliegue y reversión
 
