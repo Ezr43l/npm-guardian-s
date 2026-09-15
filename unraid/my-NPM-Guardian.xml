@@ -7,7 +7,7 @@
   <Shell>sh</Shell>
   <Privileged>false</Privileged>
   <Registry>https://github.com/Ezr43l/npm-guardian-s/pkgs/container/npm-guardian-s</Registry>
-  <Support>https://github.com/Ezr43l/npm-guardian-s/issues</Support>
+  <Support>https://discord.gg/8MAT6ZGJTW</Support>
   <Project>https://github.com/Ezr43l/npm-guardian-s</Project>
   <TemplateURL>https://raw.githubusercontent.com/Ezr43l/npm-guardian-s/main/unraid/my-NPM-Guardian.xml</TemplateURL>
   <Overview>NPM Guardian mantiene sincronizado Nginx Proxy Manager desde el nodo que posee su IP flotante hacia los pasivos. Toda la aplicación se ejecuta en este único contenedor. Tras arrancarlo, abre el panel para completar el asistente; la topología, integraciones y secretos se guardan en Datos de Guardian y no en esta plantilla.</Overview>

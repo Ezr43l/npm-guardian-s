@@ -1,53 +1,51 @@
-# Checklist de publicacion de NPM Guardian 1.0.6
+# Publicación de NPM Guardian
 
-El repositorio privado `Ezr43l/npm-guardian` sigue siendo el origen
-canonico de desarrollo. Solo una version estable aprobada se exportara, sin
-historial privado, a `Ezr43l/npm-guardian-s`.
+Procedimiento vigente desde el 15 de septiembre de 2026. Sustituye el antiguo
+proceso de publicación automática y sus requisitos de tareas en GitHub.
 
-## Puertas pendientes
+## Versión actual
 
-- [ ] Ejecutar externamente `PUT` + `GET /repos/{owner}/{repo}/immutable-releases`
-  con permisos de administracion y, solo tras confirmar `enabled=true`, fijar
-  `IMMUTABLE_RELEASES_ENABLED=true`. El workflow no almacena ningun PAT y
-  comprueba de nuevo `immutable=true` tras publicar.
+- Versión: `1.0.6`.
+- Desarrollo privado: `Ezr43l/npm-guardian`.
+- Distribución pública: `Ezr43l/npm-guardian-s`.
+- Imagen por versión: `ghcr.io/ezr43l/npm-guardian-s:1.0.6`.
+- Canal de la plantilla: `ghcr.io/ezr43l/npm-guardian-s:stable`.
 
-- [x] Adoptar Apache-2.0 y añadir el texto canónico en `LICENSE`.
-- [ ] Configurar la variable del repositorio público `LICENSE_SPDX=Apache-2.0`.
-- [x] Aprobar expresamente la creacion de `Ezr43l/npm-guardian-s`.
-- [ ] Exportar un arbol limpio sin remotos, ramas ni historial privados.
-- [ ] Publicar `ghcr.io/ezr43l/npm-guardian-s:1.0.6` para AMD64/ARM64
-  con SBOM, procedencia y digest.
-- [ ] Verificar pull anonimo y todos los enlaces de la plantilla publica.
-- [ ] Ejecutar Trivy y Gitleaks de nuevo sobre el artefacto exportado.
-- [x] Probar tres hosts Unraid reales con NPM y Keepalived: quorum 2/3,
-  replica completa, failover, nodo aislado y regreso. La evidencia con datos de
-  infraestructura se conserva fuera del árbol compartible.
-- [x] Probar backup y restauracion conjunta de datos NPM, Certbot y `/datos`,
-  incluidos sus secretos generados, preservando propietarios numericos, modos, xattrs y
-  ACL cuando el filesystem lo permite.
-- [ ] Repetir bootstrap desde cero y conflicto deliberado en un laboratorio
-  desechable; no se altera la base NPM autoritativa para satisfacer esta puerta.
-- [ ] Validar el perfil HTTPS completo con CA publica y privada.
-- [x] Definir y ejecutar la matriz inicial: NPM `2.15.1` verificado con Guardian
-  ARM64 y AMD64; versiones anteriores no se soportan y cada parche posterior
-  debe superar el mismo laboratorio antes de incorporarse.
-- [x] Mantener una sola plantilla y un solo contenedor; `docker.sock` se monta
-  únicamente en NPM Guardian y el cliente aplica una lista blanca al NPM configurado.
-- [ ] Instalar desde cero usando solo artefactos y documentacion publicos.
+## Pasos para una modificación
 
-## Contrato inmutable de esta release
+1. Aplicar únicamente el cambio solicitado en el proyecto privado.
+2. Para cambios de código, asignar la versión acordada en `VERSION` y actualizar
+   el historial y las referencias de versión afectadas.
+3. Comprobar la parte modificada y sus dependencias directas: máximo 20 pruebas
+   concretas, realizadas en nuestros equipos, no en GitHub.
+4. Si cambia el código de la imagen, construir aquí o en nuestros servidores
+   las variantes Linux AMD64 y ARM64 necesarias. No recompilar por cambios sólo
+   documentales, de soporte o del nombre de un repositorio.
+5. Publicar el código terminado en los repositorios privado y público, sin
+   copiar al público el historial privado, credenciales ni datos de instalación.
+6. Subir a GHCR las imágenes ya construidas, conservar su etiqueta de versión
+   y actualizar el canal aprobado. RTFM usa `dev`; las demás usan `stable`.
+7. Crear la ficha de versión en GitHub desde el cambio aprobado. Una ficha o
+   una subida no debe iniciar ninguna tarea automática.
+8. Sincronizar los tres Gitea y comprobar que cada espejo apunta exactamente
+   al mismo cambio que el repositorio privado de GitHub.
+9. Si hay una imagen nueva, probarla primero en Khonshu y, tras aprobación,
+   desplegar esa misma imagen en los tres servidores y comprobar lo afectado.
 
-1. La version permanece exactamente `1.0.6` en `VERSION`, imagen, Compose,
-   panel y plantilla.
-2. No se crea ni publica ningun artefacto desde el repositorio privado.
-3. La plantilla publica no contiene valores de una instalacion y apunta a
-   `Ezr43l/npm-guardian-s`.
-4. La instalacion nueva no depende de un Registry local; un mirror interno es
-   un override opcional.
-5. El workflow rechaza licencia ausente, tag divergente, repositorio incorrecto,
-   dependencias auditadas o codigo inseguro y cualquier vulnerabilidad
-   critica/alta detectada, sin `ignore-unfixed`.
-6. El tag `v1.0.6` es anotado y protegido, exige CI correcta sobre el mismo
-   commit y produce SBOM por arquitectura, digest y procedencia firmada.
-7. La plantilla contiene exactamente cinco campos Docker; la instalación nueva
-   se termina desde el asistente web y no requiere secretos externos.
+GitHub es un destino pasivo: no construye, prueba, analiza ni prepara versiones.
+Sus tareas automáticas permanecen desactivadas. Las imágenes anteriores y sus
+etiquetas no se eliminan manualmente; Local Registry regula su retención.
+
+## Instalación y soporte
+
+La plantilla conserva cinco conexiones Docker: puerto del panel, datos de NPM,
+certificados de NPM, datos de Guardian y socket Docker. NPM debe existir antes;
+sus rutas no deben apuntar a carpetas nuevas vacías.
+
+Una aplicación se instala como un único contenedor. Las plantillas públicas
+no contienen datos de nuestra instalación. Una plantilla descarga una imagen;
+no la construye. El canal se actualiza sin cambiar la URL de la plantilla.
+
+Soporte exclusivamente en [Unraides en Discord](https://discord.gg/8MAT6ZGJTW).
+El código propio usa Apache-2.0; los componentes de terceros conservan sus
+licencias y los avisos incluidos en la distribución.

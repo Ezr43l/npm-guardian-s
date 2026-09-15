@@ -3,7 +3,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Ezr43l/npm-guardian-s/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Ezr43l/npm-guardian-s/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="Versión 1.0.6" src="https://img.shields.io/badge/versión-1.0.6-38bdf8">
   <img alt="Un contenedor" src="https://img.shields.io/badge/despliegue-1%20contenedor-55df9a">
   <img alt="NPM 2.15.1" src="https://img.shields.io/badge/NPM%20verificado-2.15.1-ffcf5a">
@@ -14,7 +13,7 @@
 
 NPM Guardian replica de forma controlada el estado de Nginx Proxy Manager desde
 el nodo que posee la IP flotante hacia los nodos pasivos. La versión actual es
-**1.0.6**, la única publicada en este repositorio, y toda la aplicación se
+**1.0.6**, y toda la aplicación se
 ejecuta en **un único contenedor**.
 
 **[Primer arranque](docs/instalacion-primer-arranque.md)** ·
@@ -85,9 +84,10 @@ configuración aparece en el portal y, al guardarla, se migra a `/datos`; desde
 ese momento el fichero persistente es la fuente autoritativa. Una instalación
 nueva usa el asistente y no necesita variables funcionales ni montajes de secretos.
 
-La imagen pública prevista es
-`ghcr.io/ezr43l/npm-guardian-s:1.0.6`. Hasta que exista una release pública,
-puede construirse localmente con `build-image.sh` o mediante Compose.
+La imagen pública está disponible en `ghcr.io/ezr43l/npm-guardian-s:stable`
+(versión actual `1.0.6`). Docker descarga la variante AMD64 o ARM64 del servidor.
+La plantilla no construye la imagen ni necesita Gitea o un registro privado.
+Para desarrollar desde el código se puede usar `build-image.sh` o Compose.
 
 ## Desarrollo
 
@@ -97,3 +97,12 @@ puede construirse localmente con `build-image.sh` o mediante Compose.
 - contrato API: [docs/api-integraciones.md](docs/api-integraciones.md);
 - arquitectura: [docs/arquitectura.md](docs/arquitectura.md);
 - historial: [CHANGELOG.md](CHANGELOG.md).
+
+## Soporte
+
+El soporte se presta exclusivamente en la comunidad de Discord de Unraides:
+
+**[Entrar en Unraides](https://discord.gg/8MAT6ZGJTW)**
+
+No se atienden solicitudes de soporte en GitHub. Al pedir ayuda, indica la
+versión de la aplicación y el error, sin compartir contraseñas ni tokens.
