@@ -1,8 +1,8 @@
 # Checklist de publicacion de NPM Guardian 1.0.6
 
-Este repositorio contiene únicamente el árbol público aprobado de NPM Guardian.
-El historial y la infraestructura del entorno de desarrollo no forman parte de
-la distribución compartida.
+El repositorio privado `Ezr43l/npm-guardian` sigue siendo el origen
+canonico de desarrollo. Solo una version estable aprobada se exportara, sin
+historial privado, a `Ezr43l/npm-guardian-s`.
 
 ## Puertas pendientes
 
