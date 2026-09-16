@@ -1,108 +1,107 @@
 <p align="center">
-  <img src="assets/github-banner.svg" alt="NPM Guardian — proxy, certificados y réplica" width="100%">
+  <img src="assets/github-banner.svg" alt="NPM Guardian — réplica de Nginx Proxy Manager" width="100%">
 </p>
 
 <p align="center">
-  <img alt="Versión 1.0.6" src="https://img.shields.io/badge/versión-1.0.6-38bdf8">
   <img alt="Un contenedor" src="https://img.shields.io/badge/despliegue-1%20contenedor-55df9a">
-  <img alt="NPM 2.15.1" src="https://img.shields.io/badge/NPM%20verificado-2.15.1-ffcf5a">
+  <img alt="Alta disponibilidad" src="https://img.shields.io/badge/NPM-alta%20disponibilidad-38bdf8">
   <a href="LICENSE"><img alt="Licencia Apache 2.0" src="https://img.shields.io/badge/licencia-Apache--2.0-7d91a3"></a>
 </p>
 
-<p align="center"><strong>Un Nginx Proxy Manager activo; todos los pasivos preparados.</strong></p>
+# NPM Guardian
 
-NPM Guardian replica de forma controlada el estado de Nginx Proxy Manager desde
-el nodo que posee la IP flotante hacia los nodos pasivos. La versión actual es
-**1.0.6**, y toda la aplicación se
-ejecuta en **un único contenedor**.
+NPM Guardian mantiene sincronizados varios nodos de Nginx Proxy Manager. Toma como origen
+el nodo que posee la dirección flotante y replica la base de datos, la configuración y los
+certificados hacia los nodos pasivos.
 
-**[Primer arranque](docs/instalacion-primer-arranque.md)** ·
-**[Arquitectura](docs/arquitectura.md)** ·
-**[API](docs/api-integraciones.md)** ·
-**[Operación](docs/runbook.md)** ·
-**[Seguridad de réplica](docs/replicacion-seguridad.md)**
-## Instalación rápida en Unraid
+Toda la aplicación se ejecuta en un único contenedor para Linux `amd64` y `arm64`.
 
-La plantilla pública sólo pide cinco conexiones propias de Docker:
+## Qué ofrece
 
-1. puerto del panel;
-2. directorio `data` del NPM local;
-3. directorio `letsencrypt` del NPM local;
-4. directorio persistente de NPM Guardian;
-5. socket Docker local.
+- Detección del nodo activo mediante Keepalived.
+- Réplica validada de SQLite, configuración y certificados.
+- Copias de seguridad antes de reemplazar datos.
+- Renovación DNS y sincronización automática.
+- Incorporación segura de nuevos nodos.
+- Panel web con estado, diferencias y ejecución manual.
+- Configuración persistente desde la propia aplicación.
 
-Arranca el contenedor y abre su WebUI. El asistente de primer inicio solicita la
-topología, la conexión con Keepalived, la política HTTP/HTTPS y el nombre del
-contenedor NPM. Esos valores no se escriben en la plantilla.
+## Requisitos
 
-En el primer nodo deja vacío el código de incorporación. Guardian genera los
-secretos y muestra un código una sola vez. Guárdalo y pégalo al configurar cada
-nodo adicional. Así todos comparten la identidad criptográfica necesaria para
-replicar, sin copiar ficheros manualmente ni publicar secretos en DockerMan.
+- Una instalación de Nginx Proxy Manager en cada nodo.
+- Acceso a sus directorios `data` y `letsencrypt`.
+- Socket Docker local para detener y arrancar únicamente el NPM configurado.
+- Keepalived accesible para determinar qué nodo está activo.
+- Un volumen persistente propio para Guardian.
 
-La guía completa está en [Instalación y primer arranque](docs/instalacion-primer-arranque.md).
+## Instalación con Docker
 
-## Instalación con Compose
+Sustituye las rutas por las de tu Nginx Proxy Manager:
 
-```sh
-cp .env.example .env
-# Ajusta únicamente las rutas de los volúmenes y el puerto publicado.
-docker compose up -d --build
+```bash
+sudo mkdir -p /srv/npm-guardian
+
+sudo docker run -d \
+  --name npm-guardian \
+  --restart unless-stopped \
+  --init \
+  --read-only \
+  --cap-drop ALL \
+  --security-opt no-new-privileges \
+  --pids-limit 256 \
+  --tmpfs /tmp:rw,noexec,nosuid,nodev,size=64m \
+  --add-host host.docker.internal:host-gateway \
+  -p 6061:6061 \
+  -v /ruta/npm/data:/npm \
+  -v /ruta/npm/letsencrypt:/npm-letsencrypt \
+  -v /srv/npm-guardian:/datos \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  ghcr.io/ezr43l/npm-guardian-s:stable
 ```
 
-Después abre `http://SERVIDOR:6061/` y completa el mismo asistente. Compose no
-crea sidecars ni servicios auxiliares.
+Abre `http://SERVIDOR:6061` y completa el asistente. Configura primero un nodo sin
+código de incorporación y utiliza el código generado para añadir el resto.
+
+También puedes usar [Docker Compose](docker-compose.yml), la
+[guía de instalación](docs/instalacion-primer-arranque.md) o la
+[plantilla para Unraid](unraid/my-NPM-Guardian.xml).
+
+## Funcionamiento
+
+Sólo el nodo activo puede iniciar una réplica. Antes de aplicar datos en un destino,
+Guardian valida el paquete, conserva una copia local, detiene Nginx Proxy Manager,
+reemplaza los datos y vuelve a arrancarlo.
+
+Si no puede demostrar cuál es el activo, no replica. La interfaz muestra las diferencias
+y el nodo que contiene la copia más reciente para evitar una sustitución a ciegas.
 
 ## Persistencia
 
-El volumen `/datos` contiene:
+El volumen `/datos` contiene la identidad del nodo, la configuración del grupo,
+credenciales internas, respaldos y estado operativo. Consérvalo en las actualizaciones y
+protégelo como información sensible.
 
-- `node.json`: configuración local no secreta del nodo;
-- `secrets/session-secret`: cifrado y sesiones compartidas;
-- `secrets/cluster-token`: autenticación del protocolo interno;
-- `secrets/keepalived-api-token`: integración con Keepalived, si se indicó;
-- `guardian.json`: cuenta y configuración funcional replicada;
-- estado operativo y respaldos de réplicas.
+## Seguridad
 
-Los secretos se generan con permisos `0600`. Conserva `/datos` en las
-actualizaciones y protégelo como cualquier volumen que contenga credenciales.
+El socket Docker concede acceso elevado al servidor. No publiques el panel directamente
+en Internet y limita su acceso mediante red privada, cortafuegos o un proxy HTTPS.
+Comprueba siempre que las rutas montadas pertenecen al NPM local correcto.
 
-## Funcionamiento esencial
+Documentación:
 
-- Keepalived determina de forma ternaria qué nodo es activo; una respuesta
-  desconocida nunca concede autoridad.
-- Sólo el activo autentica usuarios, renueva certificados y emite réplicas.
-- Los cambios sensibles requieren quórum del clúster configurado.
-- El acceso humano se valida contra una cuenta administradora de NPM. Guardian
-  no guarda su contraseña de inicio de sesión.
-- El socket Docker queda limitado por código al nombre de contenedor NPM elegido.
-
-## Compatibilidad y migraciones
-
-Los despliegues anteriores que ya proporcionan `NPMG_*` siguen funcionando. Su
-configuración aparece en el portal y, al guardarla, se migra a `/datos`; desde
-ese momento el fichero persistente es la fuente autoritativa. Una instalación
-nueva usa el asistente y no necesita variables funcionales ni montajes de secretos.
-
-La imagen pública está disponible en `ghcr.io/ezr43l/npm-guardian-s:stable`
-(versión actual `1.0.6`). Docker descarga la variante AMD64 o ARM64 del servidor.
-La plantilla no construye la imagen ni necesita Gitea o un registro privado.
-Para desarrollar desde el código se puede usar `build-image.sh` o Compose.
-
-## Desarrollo
-
-- licencia: Apache-2.0;
-- versión única: [`VERSION`](VERSION);
-- pruebas: se ejecutan dentro de la fase `tests` del Dockerfile;
-- contrato API: [docs/api-integraciones.md](docs/api-integraciones.md);
-- arquitectura: [docs/arquitectura.md](docs/arquitectura.md);
-- historial: [CHANGELOG.md](CHANGELOG.md).
+- [Arquitectura](docs/arquitectura.md)
+- [API de integraciones](docs/api-integraciones.md)
+- [Historial de cambios](CHANGELOG.md)
 
 ## Soporte
 
-El soporte se presta exclusivamente en la comunidad de Discord de Unraides:
+El soporte se presta en la comunidad de Discord de Unraides:
 
-**[Entrar en Unraides](https://discord.gg/8MAT6ZGJTW)**
+https://discord.gg/8MAT6ZGJTW
 
-No se atienden solicitudes de soporte en GitHub. Al pedir ayuda, indica la
-versión de la aplicación y el error, sin compartir contraseñas ni tokens.
+No compartas contraseñas, tokens, certificados ni registros con datos privados.
+
+## Licencia
+
+Código y documentación: [Apache License 2.0](LICENSE).
+
