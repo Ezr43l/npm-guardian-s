@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 # Imagen portable de NPM Guardian. La fase de pruebas nunca llega a la imagen
 # final, pero impide publicar un artefacto cuyo codigo no supere la suite.
-ARG PYTHON_IMAGE=python:3.12-alpine@sha256:d09d15e60962ca365d1cd544a48773bac9d33f2fb1b00f2aa0deec78ade7dc31
+ARG PYTHON_IMAGE=python:3.12-alpine@sha256:b658b05ce9c4eb97ec6fc19424818a1f31993659c2b505a532f470e83807815d
 FROM ${PYTHON_IMAGE} AS runtime-base
 
 ARG APP_VERSION
@@ -24,7 +24,9 @@ LABEL org.opencontainers.image.title="NPM Guardian" \
 RUN apk upgrade --no-cache && \
     apk add --no-cache curl bash tzdata ca-certificates
 COPY docker/guardian/requirements.txt /tmp/requirements.txt
-RUN pip install --no-cache-dir --only-binary=:all: --requirement /tmp/requirements.txt
+RUN python3 -m pip install --no-cache-dir --upgrade pip==26.2.2 \
+    && python3 -m pip install --no-cache-dir --only-binary=:all: --requirement /tmp/requirements.txt \
+    && python3 -m pip uninstall --yes pip
 
 COPY docker/guardian/panel /opt/panel
 COPY VERSION /opt/APP_VERSION

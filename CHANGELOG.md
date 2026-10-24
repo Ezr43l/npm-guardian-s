@@ -3,6 +3,14 @@
 La fuente única de versión es [`VERSION`](VERSION). Código, API, interfaz,
 metadatos OCI e imagen comparten ese valor; no existe un contador de imagen.
 
+## [1.0.7] — correcciones de seguridad
+
+### Seguridad
+
+- Actualizada la base a Python 3.12.15 y a las revisiones corregidas de Alpine.
+- Actualizado el instalador de paquetes durante la construcción y retirado de la imagen
+  final, donde no es necesario.
+
 ## [1.0.6] — actualización inmediata tras un cambio de nodo activo
 
 ### Fixed

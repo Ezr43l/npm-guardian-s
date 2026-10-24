@@ -5,10 +5,10 @@ proceso de publicación automática y sus requisitos de tareas en GitHub.
 
 ## Versión actual
 
-- Versión: `1.0.6`.
+- Versión: `1.0.7`.
 - Desarrollo privado: `Ezr43l/npm-guardian`.
 - Distribución pública: `Ezr43l/npm-guardian-s`.
-- Imagen por versión: `ghcr.io/ezr43l/npm-guardian-s:1.0.6`.
+- Imagen por versión: `ghcr.io/ezr43l/npm-guardian-s:1.0.7`.
 - Canal de la plantilla: `ghcr.io/ezr43l/npm-guardian-s:stable`.
 
 ## Pasos para una modificación

@@ -1,5 +1,5 @@
 param(
-    [string]$GuardianImage = "npm-guardian:1.0.6",
+    [string]$GuardianImage = "npm-guardian:1.0.7",
     [string]$NpmImage = "jc21/nginx-proxy-manager:2.15.1@sha256:52b2c59994f3d36acfcf70a1626f29734df0ed8c71bacc0269f78b6f939858bb"
 )
 
@@ -95,22 +95,6 @@ try {
     if (-not $setupReady) {
         Invoke-Docker logs $guardian
         throw "NPM Guardian no sirvió el asistente inicial"
-    }
-
-    # Nginx can be ready a few seconds before NPM finishes every SQLite
-    # migration. Wait for the exact schema contract queried by Guardian.
-    $npmSchemaReady = $false
-    foreach ($attempt in 1..90) {
-        if (Test-Docker exec $guardian python3 -c `
-                "import sqlite3; c=sqlite3.connect('file:/npm/database.sqlite?mode=ro',uri=True,timeout=2); c.execute('select id,nice_name,provider,expires_on,meta,domain_names,is_deleted from certificate limit 0'); c.execute('select id,domain_names,forward_scheme,forward_host,forward_port,certificate_id,enabled,is_deleted from proxy_host limit 0')") {
-            $npmSchemaReady = $true
-            break
-        }
-        Start-Sleep -Seconds 2
-    }
-    if (-not $npmSchemaReady) {
-        Invoke-Docker logs $npm
-        throw "NPM did not finish preparing the required SQLite schema"
     }
 
     $setup = @{
