@@ -73,38 +73,38 @@ class TestWatchdogRoleRefresh(unittest.TestCase):
         vigilante._ultimo.update(self.previous)
 
     def test_becoming_active_checks_namecheap_immediately(self):
-        command = {"activo": "osiris", "soy_yo": True,
+        command = {"activo": "node-b", "soy_yo": True,
                    "origen": "dirección flotante"}
         with mock.patch.object(vigilante, "revisar") as review:
             signature, next_review = vigilante._procesar_rol(
-                command, ("khonshu", False, "dirección flotante"),
+                command, ("node-a", False, "dirección flotante"),
                 proxima_revision=500.0, ahora=100.0)
         review.assert_called_once_with(mando=command)
-        self.assertEqual(signature, ("osiris", True, "dirección flotante"))
+        self.assertEqual(signature, ("node-b", True, "dirección flotante"))
         self.assertEqual(next_review, 100.0 + vigilante.INTERVALO)
 
     def test_same_active_node_respects_hourly_interval(self):
-        command = {"activo": "osiris", "soy_yo": True,
+        command = {"activo": "node-b", "soy_yo": True,
                    "origen": "dirección flotante"}
         with mock.patch.object(vigilante, "revisar") as review:
             _, next_review = vigilante._procesar_rol(
-                command, ("osiris", True, "dirección flotante"),
+                command, ("node-b", True, "dirección flotante"),
                 proxima_revision=500.0, ahora=100.0)
         review.assert_not_called()
         self.assertEqual(next_review, 500.0)
         self.assertEqual(vigilante._ultimo["mando"], command)
 
     def test_passive_card_changes_to_current_active_node(self):
-        command = {"activo": "osiris", "soy_yo": False,
+        command = {"activo": "node-b", "soy_yo": False,
                    "origen": "dirección flotante"}
         with mock.patch.object(vigilante, "revisar") as review:
             vigilante._procesar_rol(
-                command, ("khonshu", False, "dirección flotante"),
+                command, ("node-a", False, "dirección flotante"),
                 proxima_revision=500.0, ahora=100.0)
         review.assert_not_called()
         self.assertEqual(vigilante._ultimo["mando"], command)
         self.assertEqual(vigilante._ultimo["namecheap"]["estado"], "no_me_toca")
-        self.assertIn("osiris", vigilante._ultimo["namecheap"]["mensaje"])
+        self.assertIn("node-b", vigilante._ultimo["namecheap"]["mensaje"])
 
 
 class TestStableVersionContract(unittest.TestCase):
