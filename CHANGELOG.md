@@ -3,6 +3,19 @@
 La fuente única de versión es [`VERSION`](VERSION). Código, API, interfaz,
 metadatos OCI e imagen comparten ese valor; no existe un contador de imagen.
 
+## [1.0.8] — sincronización automática con certificados coherentes
+
+- La sincronización programada comprueba que cada certificado actual y su clave
+  privada coincidan antes de preparar la réplica o detener un NPM pasivo.
+- Si falta la clave correcta, busca la que corresponda exactamente al certificado
+  actual en el archivo local o en snapshots autenticados de los pares. Conserva
+  copia de la clave sustituida y recarga Nginx tras validarlo.
+- La recuperación mantiene la base de datos, los hosts nuevos y el certificado
+  actual cuando encuentra su clave. Si otro nodo conserva una pareja válida más
+  reciente para los mismos dominios, recupera esa renovación y su caducidad;
+  no utiliza certificados antiguos como sustituto de cambios recientes.
+- El receptor rechaza paquetes TLS incoherentes antes de interrumpir NPM.
+
 ## [1.0.7] — correcciones de seguridad
 
 ### Seguridad

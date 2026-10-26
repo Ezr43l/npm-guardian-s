@@ -679,6 +679,27 @@ def _sincronizar(forzar=False):
                 "motivo": f"aquí no se manda (manda «{m.get('activo') or 'nadie todavía'}»); "
                           f"la réplica sale siempre del nodo que sostiene la dirección"}
 
+    def comprobar_activo():
+        if quien_manda().get("soy_yo") is not True:
+            raise replica.RolCambiado("el nodo dejó de ser activo durante la preparación TLS")
+
+    def paquetes_tls():
+        for par in PARES:
+            comprobar_activo()
+            try:
+                paquete, _ = _pedir_snapshot(par)
+                yield paquete
+            except (replica.ErrorReplica, urllib.error.URLError,
+                    protocolo_cluster.ErrorProtocolo):
+                continue
+
+    try:
+        tls = replica.recuperar_tls(paquetes_tls, comprobar_activo)
+        if tls["certificados_recuperados"]:
+            dockerd.recargar_nginx(replica.CONTENEDOR)
+    except (replica.ErrorReplica, dockerd.ErrorDocker) as error:
+        return {"ok": False, "hecho": False, "motivo": str(error)}
+
     estado_sinc = sincronia()
 
     if estado_sinc.get("nodos_incompatibles"):
@@ -795,6 +816,7 @@ def _sincronizar(forzar=False):
 
     return {**_resumen_quorum(resultados), "hecho": bool(bien), "desde": NODO,
             "bytes": len(paquete), "resultados": resultados,
+            "tls": tls,
             "recuperado_de": recuperado_de,
             "recuperacion": resultado_recuperacion}
 
@@ -1481,7 +1503,9 @@ class Manejador(BaseHTTPRequestHandler):
 
             comprobar_fuente_pasiva()
             huella_antes = _huella_logica()
-            paquete = replica.empaquetar()
+            # El activo puede necesitar sólo una clave sana de este nodo.
+            # El receptor valida TLS antes de aplicar cualquier snapshot completo.
+            paquete = replica.empaquetar(validar_tls=False)
             comprobar_fuente_pasiva()
             huella_despues = _huella_logica()
             if not hmac.compare_digest(huella_antes, huella_despues):

@@ -19,6 +19,7 @@ import time
 import uuid
 
 import dockerd
+import certificados_tls
 
 
 RUTA_DATOS = os.environ.get("NPMG_NPM_DATA", os.environ.get("NPMHA_NPM_DATOS", "/npm"))
@@ -194,7 +195,7 @@ def _crear_staging_una_vez():
         raise
 
 
-def _crear_staging():
+def _crear_staging(validar_tls=True):
     """Obtiene DB y filesystem del mismo intervalo estable, con reintentos."""
     ultimo_error = None
     for _intento in range(3):
@@ -211,6 +212,13 @@ def _crear_staging():
             db_paquete = os.path.join(raiz, "data", "database.sqlite")
             if (artefactos_antes == artefactos_despues and
                     _sha256(db_paquete) == _sha256(segundo)):
+                if validar_tls:
+                    try:
+                        certificados_tls.validar(
+                            os.path.join(raiz, "data"), os.path.join(raiz, "letsencrypt"))
+                    except certificados_tls.ErrorTLS as error:
+                        shutil.rmtree(raiz, ignore_errors=True)
+                        raise ErrorReplica(str(error)) from error
                 return raiz
             ultimo_error = "NPM cambió mientras se preparaba el snapshot"
         finally:
@@ -223,9 +231,9 @@ def _crear_staging():
                        "; se aborta sin enviar una mezcla de estados")
 
 
-def empaquetar():
+def empaquetar(validar_tls=True):
     """Crea un snapshot autocontenido sin leer SQLite como fichero vivo."""
-    raiz = _crear_staging()
+    raiz = _crear_staging(validar_tls=validar_tls)
     try:
         buf = io.BytesIO()
         with tarfile.open(fileobj=buf, mode="w:gz") as tar:
@@ -240,6 +248,24 @@ def empaquetar():
             f"el paquete son {len(datos) // (1024 * 1024)} MB, más de los "
             f"{MAX_TAMANO // (1024 * 1024)} MB permitidos")
     return datos
+
+
+def recuperar_tls(obtener_paquetes=None, comprobar=None):
+    """Recupera claves exactas desde snapshots de pares ya autenticados."""
+    def candidatas(ids):
+        if not obtener_paquetes:
+            return
+        for paquete in obtener_paquetes():
+            raiz = _extraer_validado(paquete, validar_tls=False)
+            try:
+                yield from certificados_tls.claves(os.path.join(raiz, "letsencrypt"), ids)
+            finally:
+                shutil.rmtree(raiz, ignore_errors=True)
+    try:
+        return certificados_tls.recuperar(
+            RUTA_DATOS, RUTA_LE, RUTA_RESPALDOS, candidatas, comprobar)
+    except certificados_tls.ErrorTLS as error:
+        raise ErrorReplica(str(error)) from error
 
 
 def respaldos():
@@ -305,7 +331,7 @@ def _validar_paquete(tar):
     return miembros
 
 
-def _validar_extraido(raiz):
+def _validar_extraido(raiz, validar_tls=True):
     try:
         with open(os.path.join(raiz, "manifest.json"), encoding="utf-8") as fichero:
             manifiesto = json.load(fichero)
@@ -332,16 +358,21 @@ def _validar_extraido(raiz):
         raise ErrorReplica(f"la base recibida no se puede abrir: {error}") from error
     if not resultado or resultado[0] != "ok":
         raise ErrorReplica("la base recibida no supera PRAGMA quick_check")
+    if validar_tls:
+        try:
+            certificados_tls.validar(os.path.join(raiz, "data"), os.path.join(raiz, "letsencrypt"))
+        except certificados_tls.ErrorTLS as error:
+            raise ErrorReplica(str(error)) from error
 
 
-def _extraer_validado(datos):
+def _extraer_validado(datos, validar_tls=True):
     raiz = tempfile.mkdtemp(
         prefix="npm-guardian-receive-", dir=tempfile.gettempdir())
     try:
         with tarfile.open(fileobj=io.BytesIO(datos), mode="r:gz") as tar:
             miembros = _validar_paquete(tar)
             tar.extractall(path=raiz, members=miembros, filter="data")
-        _validar_extraido(raiz)
+        _validar_extraido(raiz, validar_tls=validar_tls)
         return raiz
     except Exception:
         shutil.rmtree(raiz, ignore_errors=True)
@@ -924,7 +955,9 @@ def aplicar(datos, soy_el_activo, comprobar_pasivo=None, comprobar_activo=None):
         npm_parado = True
         pasos.append("NPM parado")
 
-        respaldo = _guardar_respaldo(empaquetar())
+        # Se preserva también un estado local averiado antes de sustituirlo.
+        # La validación TLS de entrada ya ha ocurrido antes de parar NPM.
+        respaldo = _guardar_respaldo(empaquetar(validar_tls=False))
         pasos.append(f"estado anterior guardado en {respaldo}")
 
         fase_journal = "swapping"

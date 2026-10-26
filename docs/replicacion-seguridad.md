@@ -26,6 +26,20 @@ topologías distintas calculen mayorías incompatibles.
 
 ## Comparación previa de NPM
 
+La tarea programada valida las parejas de certificado y clave privada antes de
+replicar. Si una clave no coincide, sólo se recupera una clave cuya parte pública
+sea idéntica a la del certificado actual. La búsqueda usa el archivo local y, si
+hace falta, snapshots cifrados y autenticados de los pares ya configurados. No se
+copia su base de datos ni se retrocede a un certificado anterior. Si la clave exacta
+no existe y un par tiene una pareja válida más reciente para los mismos dominios,
+se recupera esa renovación junto a su caducidad. La clave anterior queda
+respaldada en `tls-recovery` dentro del almacenamiento de Guardian. Una renovación
+que cambie mientras se comprueba provoca un reintento, no una sobrescritura ciega.
+
+La misma validación se repite al recibir el paquete, antes de parar el NPM pasivo.
+Si no se encuentra la clave exacta, el sincronizador explica el bloqueo y conserva
+el estado actual; nunca elige por la fecha de modificación de un archivo PEM.
+
 El inventario de `certificate` y `proxy_host` ofrece identificador, marca de
 modificación, borrado y huella de contenido. Las tablas autoritativas restantes
 se comparan por huella agregada de esquema y filas, incluidas cuentas, permisos,

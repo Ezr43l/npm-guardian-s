@@ -109,7 +109,7 @@ class TestWatchdogRoleRefresh(unittest.TestCase):
 
 class TestStableVersionContract(unittest.TestCase):
     def test_single_stable_version_source(self):
-        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "1.0.7")
+        self.assertEqual((ROOT / "VERSION").read_text(encoding="utf-8").strip(), "1.0.8")
         self.assertFalse((ROOT / "docker" / "guardian" / "VERSION").exists())
         dockerfile = (ROOT / "docker" / "guardian" / "Dockerfile").read_text(
             encoding="utf-8")
