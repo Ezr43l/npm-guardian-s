@@ -1,8 +1,19 @@
 # syntax=docker/dockerfile:1.7
 # Imagen portable de NPM Guardian. La fase de pruebas nunca llega a la imagen
 # final, pero impide publicar un artefacto cuyo codigo no supere la suite.
-ARG PYTHON_IMAGE=python:3.12-alpine@sha256:b658b05ce9c4eb97ec6fc19424818a1f31993659c2b505a532f470e83807815d
-FROM ${PYTHON_IMAGE} AS runtime-base
+ARG PYTHON_IMAGE=python:3.12.16-alpine3.24@sha256:c5ba3deef00c7758561a0f03c26f44f10589263d40e732b8748e0d1f38f6dd89
+FROM ${PYTHON_IMAGE} AS security-builder
+COPY docker/security /security
+RUN sh /security/build-runtime.sh
+
+FROM ${PYTHON_IMAGE} AS security-python
+RUN apk upgrade --no-cache && apk add --no-cache libexpat=2.10.0-r0
+COPY --from=security-builder /out-runtime/ /
+COPY --from=security-builder /wheels /tmp/security-wheels
+COPY docker/security/install-python.py /tmp/install-python.py
+RUN python3 -c 'import sys,pyexpat;assert sys.version_info[:3] == (3,12,16);assert pyexpat.version_info >= (2,10,0)'
+
+FROM security-python AS runtime-base
 
 ARG APP_VERSION
 ARG VCS_REF="unknown"
@@ -25,7 +36,7 @@ RUN apk upgrade --no-cache && \
     apk add --no-cache curl bash tzdata ca-certificates
 COPY docker/guardian/requirements.txt /tmp/requirements.txt
 RUN python3 -m pip install --no-cache-dir --upgrade pip==26.2.2 \
-    && python3 -m pip install --no-cache-dir --only-binary=:all: --requirement /tmp/requirements.txt \
+    && python3 /tmp/install-python.py /tmp/requirements.txt \
     && python3 -m pip uninstall --yes pip
 
 COPY docker/guardian/panel /opt/panel

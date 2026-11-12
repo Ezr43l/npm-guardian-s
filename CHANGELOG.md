@@ -1,5 +1,11 @@
 # Changelog de NPM Guardian
 
+## 1.0.9 — 2026-11-12
+
+- Actualización de seguridad de Python, Expat y paquetes del contenedor.
+- Correcciones oficiales de OpenSSL del 10 de noviembre, sobre la versión estable y verificadas por su huella.
+- cryptography compilada contra las mismas librerías corregidas, sin otra copia de OpenSSL incrustada.
+
 La fuente única de versión es [`VERSION`](VERSION). Código, API, interfaz,
 metadatos OCI e imagen comparten ese valor; no existe un contador de imagen.
 
